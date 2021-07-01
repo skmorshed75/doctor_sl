@@ -560,7 +560,9 @@ if ( ! class_exists( 'Jet_Popup_Conditions_Manager' ) ) {
 					foreach ( $column['elements'] as $key => $element ) {
 						$element_type = $element['elType'];
 
-						if ( 'widget' === $element_type && ! empty( $element['settings']['jet_attached_popup'] ) ) {
+						$include = apply_filters( 'jet-engine/dynamic-visibility/check-conditions', true, $element['settings'] );
+
+						if ( 'widget' === $element_type && ! empty( $element['settings']['jet_attached_popup'] ) && $include ) {
 							$this->attached_popups[] = $element['settings']['jet_attached_popup'];
 						}
 

@@ -192,6 +192,7 @@
 
 						var $currentPopup = $button.closest( '.jet-popup ' ),
 							link          = $( this ).attr( 'href' ),
+							target        = $( this ).attr( 'target' ),
 							popupId       = $currentPopup.attr( 'id' );
 
 						$( window ).trigger( {
@@ -202,7 +203,11 @@
 							}
 						} );
 
-						window.location = link;
+						if ( '_blank' === target  ) {
+							window.open( link, '_blank' );
+						} else {
+							window.open( link );
+						}
 
 						return false;
 					} );
@@ -303,7 +308,7 @@
 				scoreId               = $scope.data( 'id' ),
 				settings              = $target.data( 'settings' ),
 				$subscribeForm        = $( '.jet-popup-mailchimp__form', $target ),
-				$fields               = $( '.jet-popup-mailchimp__fields', $target ),
+				$fields                = $( '.jet-popup-mailchimp__fields', $target ),
 				$mailField            = $( '.jet-popup-mailchimp__mail-field', $target ),
 				$inputData            = $mailField.data( 'instance-data' ),
 				$submitButton         = $( '.jet-popup-mailchimp__submit', $target ),

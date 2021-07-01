@@ -4,6 +4,10 @@ Build popup with any layout in drag&drop way, change its position and trigger ev
 
 # ChangeLog
 
+## [1.5.3](https://github.com/ZemezLab/jet-popup/releases/tag/1.5.3)
+* FIX: minor issues
+* FIX: prevent php warning
+
 ## [1.5.2](https://github.com/ZemezLab/jet-popup/releases/tag/1.5.2)
 * FIX: Elementor 3.1.2 compatibility issue
 * FIX: force ajax

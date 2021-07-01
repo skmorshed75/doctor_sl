@@ -95,7 +95,6 @@ if ( ! class_exists( 'Jet_Popup_Element_Extensions' ) ) {
 				'jet_attached_popup',
 				[
 					'label'       => __( 'Attached Popup', 'jet-popup' ),
-					'label_block' => true,
 					'type'        => 'jet-query',
 					'query_type'  => 'post',
 					'query'       => apply_filters( 'jet_popup_default_query_args',
@@ -107,6 +106,10 @@ if ( ! class_exists( 'Jet_Popup_Element_Extensions' ) ) {
 							'post_status'    => 'publish',
 						]
 					),
+					'edit_button' => [
+						'active' => true,
+						'label'  => __( 'Edit Popup', 'jet-popup' ),
+					],
 				]
 			);
 
