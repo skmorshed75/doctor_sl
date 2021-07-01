@@ -165,9 +165,12 @@ class Jet_Elements_Animated_Box extends Jet_Elements_Base {
 			'front_side_template_id',
 			array(
 				'label'       => esc_html__( 'Choose Template', 'jet-elements' ),
-				'label_block' => 'true',
 				'type'        => 'jet-query',
 				'query_type'  => 'elementor_templates',
+				'edit_button' => array(
+					'active' => true,
+					'label'  => __( 'Edit Template', 'jet-elements' ),
+				),
 				'condition'   => array(
 					'front_side_content_type' => 'template',
 				),
@@ -299,9 +302,12 @@ class Jet_Elements_Animated_Box extends Jet_Elements_Base {
 			'back_side_template_id',
 			array(
 				'label'       => esc_html__( 'Choose Template', 'jet-elements' ),
-				'label_block' => 'true',
 				'type'        => 'jet-query',
 				'query_type'  => 'elementor_templates',
+				'edit_button' => array(
+					'active' => true,
+					'label'  => __( 'Edit Template', 'jet-elements' ),
+				),
 				'condition'   => array(
 					'back_side_content_type' => 'template',
 				),

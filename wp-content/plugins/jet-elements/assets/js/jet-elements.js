@@ -62,7 +62,7 @@
 					seconds: $countdown.find( '[data-value="seconds"]' )
 				};
 
-			JetElements.widgetCountdown.initClock = function() {
+			var initClock = function() {
 
 				switch( type ) {
 					case 'due_date':
@@ -71,7 +71,7 @@
 
 					case 'evergreen':
 						if ( evergreenInterval > 0 ) {
-							endTime = JetElements.widgetCountdown.getEvergreenDate();
+							endTime = getEvergreenDate();
 						}
 						break;
 
@@ -90,17 +90,17 @@
 						break;
 				}
 
-				JetElements.widgetCountdown.updateClock();
-				timeInterval = setInterval( JetElements.widgetCountdown.updateClock, 1000 );
+				updateClock();
+				timeInterval = setInterval( updateClock, 1000 );
 			};
 
-			JetElements.widgetCountdown.updateClock = function() {
+			var updateClock = function() {
 
 				if ( ! endTime ) {
 					return;
 				}
 
-				var timeRemaining = JetElements.widgetCountdown.getTimeRemaining(
+				var timeRemaining = getTimeRemaining(
 					endTime,
 					{
 						days:    elements.days.length,
@@ -121,11 +121,11 @@
 
 				if ( timeRemaining.total <= 0 ) {
 					clearInterval( timeInterval );
-					JetElements.widgetCountdown.runActions();
+					runActions();
 				}
 			};
 
-			JetElements.widgetCountdown.splitNum = function( num ) {
+			var splitNum = function( num ) {
 
 				var num    = num.toString(),
 					arr    = [],
@@ -144,7 +144,7 @@
 				return result;
 			};
 
-			JetElements.widgetCountdown.getTimeRemaining = function( endTime, visible ) {
+			var getTimeRemaining = function( endTime, visible ) {
 
 				var timeRemaining = endTime - new Date(),
 					seconds = Math.floor( ( timeRemaining / 1000 ) % 60 ),
@@ -174,15 +174,15 @@
 				return {
 					total: timeRemaining,
 					parts: {
-						days: JetElements.widgetCountdown.splitNum( days ),
-						hours: JetElements.widgetCountdown.splitNum( hours ),
-						minutes: JetElements.widgetCountdown.splitNum( minutes ),
-						seconds: JetElements.widgetCountdown.splitNum( seconds )
+						days: splitNum( days ),
+						hours: splitNum( hours ),
+						minutes: splitNum( minutes ),
+						seconds: splitNum( seconds )
 					}
 				};
 			};
 
-			JetElements.widgetCountdown.runActions = function() {
+			var runActions = function() {
 
 				$scope.trigger( 'jetCountdownTimerExpire', $scope );
 
@@ -214,14 +214,14 @@
 							endTime = new Date();
 							endTime = endTime.setSeconds( endTime.getSeconds() + restartInterval );
 
-							JetElements.widgetCountdown.updateClock();
-							timeInterval = setInterval( JetElements.widgetCountdown.updateClock, 1000 );
+							updateClock();
+							timeInterval = setInterval( updateClock, 1000 );
 							break;
 					}
 				} );
 			};
 
-			JetElements.widgetCountdown.getEvergreenDate = function() {
+			var getEvergreenDate = function() {
 				var id = $scope.data( 'id' ),
 					dueDateKey = 'jet_evergreen_countdown_due_date_' + id,
 					intervalKey = 'jet_evergreen_countdown_interval_' + id,
@@ -251,7 +251,7 @@
 				}
 			};
 
-			JetElements.widgetCountdown.initClock();
+			initClock();
 
 		},
 
@@ -298,7 +298,19 @@
 
 					marker = new google.maps.Marker( pinData );
 
-					if ( '' !== pin.desc ) {
+					if ( '' !== pin.desc || undefined !== pin.link_title ) {
+
+						if ( undefined !== pin.link_title ) {
+							var link_url               = pin.link.url,
+								link_is_external       = 'on' === pin.link.is_external ? 'target="_blank"': '',
+								link_nofollow          = 'on' === pin.link.nofollow ? 'rel="nofollow"': '',
+								link_custom_attributes = undefined !== parse_custom_attributes( pin.link.custom_attributes ) ? parse_custom_attributes( pin.link.custom_attributes ) : '',
+								link_layout;
+
+							link_layout = '<div class="jet-map-pin__wrapper"><a class="jet-map-pin__link" href="' + link_url + '" ' + link_is_external + link_nofollow + link_custom_attributes + '>' + pin.link_title + '</a></div>';
+							pin.desc += link_layout;
+						}
+
 						infowindow = new google.maps.InfoWindow({
 							content: pin.desc,
 							disableAutoPan: true
@@ -317,6 +329,35 @@
 				});
 			}
 
+			function parse_custom_attributes( attributes_string, delimiter = ',' ) {
+				var attributes = attributes_string.split( delimiter ),
+					result;
+
+				result = attributes.reduce(function( res, attribute ) {
+					var attr_key_value = attribute.split( '|' ),
+						attr_key       = attr_key_value[0].toLowerCase(),
+						attr_value     = '',
+						regex          = new RegExp(/[-_a-z0-9]+/);
+
+					if( !regex.test( attr_key ) ) {
+						return;
+					}
+
+					// Avoid Javascript events and unescaped href.
+					if ( 'href' === attr_key || 'on' === attr_key.substring( 0, 2 ) ) {
+						return;
+					}
+
+					if ( undefined !== attr_key_value[1] ) {
+						attr_value = attr_key_value[1].trim();
+					} else {
+						attr_value = '';
+					}
+					return res + attr_key + '="' + attr_value + '" ';
+				}, '');
+
+				return result;
+			}
 		},
 
 		prepareWaypointOptions: function( $scope, waypointOptions ) {
@@ -452,10 +493,19 @@
 
 		widgetCarousel: function( $scope ) {
 
-			var $carousel = $scope.find( '.jet-carousel' );
+			var $carousel    = $scope.find( '.jet-carousel' ),
+				fraction_nav = $carousel.find('.jet-carousel__fraction-navigation');
 
 			if ( ! $carousel.length ) {
 				return;
+			}
+
+			if ( true === $carousel.data( 'slider_options' ).fractionNav ) {
+				$carousel.find( '.elementor-slick-slider' ).on( 'init reInit afterChange', function ( event, slick, currentSlide, nextSlide ) {
+					//currentSlide is undefined on init -- set it to 0 in this case (currentSlide is 0 based)
+					var i = ( currentSlide ? currentSlide : 0 ) + 1;
+					fraction_nav.html( '<span class="current">' + i + '</span>' + '<span class="separator">/</span>' + '<span class="total">' + slick.slideCount + '</span>');
+				} );
 			}
 
 			JetElements.initCarousel( $carousel.find( '.elementor-slick-slider' ), $carousel.data( 'slider_options' ) );
@@ -1107,9 +1157,12 @@
 		},
 
 		widgetSlider: function( $scope ) {
-			var $target        = $scope.find( '.jet-slider' ),
-				$imagesTagList = $( '.sp-image', $target ),
-				instance       = null,
+			var $target         = $scope.find( '.jet-slider' ),
+				$imagesTagList  = $( '.sp-image', $target ),
+				item            = $( '.jet-slider__item', $target ),
+				instance        = null,
+				item_url        = '',
+				item_url_target = '',
 				defaultSettings = {
 					imageScaleMode: 'cover',
 					slideDistance: { size: 10, unit: 'px' },
@@ -1136,11 +1189,42 @@
 					rightToLeft: false,
 				},
 				instanceSettings = $target.data( 'settings' ) || {},
-				settings         = $.extend( {}, defaultSettings, instanceSettings );
+				settings         = $.extend( {}, defaultSettings, instanceSettings ),
+				fraction_nav     = $target.find( '.jet-slider__fraction-pagination' );
 
 			if ( ! $target.length ) {
 				return;
 			}
+
+			item.each( function() {
+				var _this = $( this ).find( '.jet-slider__content' );
+
+				if ( _this.data( 'slide-url' ) && !elementor.isEditMode() ) {
+					let clickXPos,
+						clickYPos;
+
+					_this.on( 'mousedown touchstart', function( e ) {
+						window.XPos = e.pageX || e.originalEvent.changedTouches[0].pageX;
+						window.YPos = e.pageY || e.originalEvent.changedTouches[0].pageY;
+					} )
+
+					_this.on( 'mouseup touchend', function( e ) {
+						item_url        = _this.data( 'slide-url' );
+						item_url_target = _this.data( 'slide-url-target' );
+						clickXPos       = e.pageX || e.originalEvent.changedTouches[0].pageX;
+						clickYPos       = e.pageY || e.originalEvent.changedTouches[0].pageY;
+
+						if ( window.XPos === clickXPos && window.YPos === clickYPos ) {
+							if ( '_blank' === item_url_target ) {
+								window.open( item_url );
+								return;
+							} else {
+								window.location = item_url;
+							}
+						}
+					} );
+				}
+			} );
 
 			var tabletHeight = '' !== settings['sliderHeightTablet']['size'] ? settings['sliderHeightTablet']['size'] + settings['sliderHeightTablet']['unit'] : settings['sliderHeight']['size'] + settings['sliderHeight']['unit'],
 				mobileHeight = '' !== settings['sliderHeightMobile']['size'] ? settings['sliderHeightMobile']['size'] + settings['sliderHeightMobile']['unit'] : tabletHeight,
@@ -1201,13 +1285,25 @@
 						arrowIconHtml      = $( '.' + settings['sliderNavigationIcon'] ).html();
 
 					$( '.sp-full-screen-button', $target ).html( fullscreenIconHtml );
-
 					$( '.sp-previous-arrow', $target ).html( arrowIconHtml );
 					$( '.sp-next-arrow', $target ).html( arrowIconHtml );
-
 					$( '.slider-pro', $target ).addClass( 'slider-loaded' );
 
 					this.resize();
+				},
+				gotoSlideComplete: function() {
+					if ( true === settings['fractionPag'] ) {
+						var i = ( this.getSelectedSlide() ? this.getSelectedSlide() : 0 ) + 1;
+
+						fraction_nav.html( '<span class="current">' + i + '</span>' + '<span class="separator">/</span>' + '<span class="total">' + this.getTotalSlides() + '</span>');
+					}
+				},
+				update: function() {
+					if ( true === settings['fractionPag'] ) {
+						var i = ( this.getSelectedSlide() ? this.getSelectedSlide() : 0 ) + 1;
+
+						fraction_nav.html( '<span class="current">' + i + '</span>' + '<span class="separator">/</span>' + '<span class="total">' + this.getTotalSlides() + '</span>');
+					}
 				},
 				breakpoints: breakpointsSettings
 			} );
@@ -1306,7 +1402,7 @@
 
 		initCarousel: function( $target, options ) {
 
-			var tabletSlides, mobileSlides, defaultOptions, slickOptions;
+			var tabletSlides, mobileSlides, defaultOptions, slickOptions, tabletScroll, mobileScroll;
 
 			if ( options.slidesToShow.tablet ) {
 				tabletSlides = options.slidesToShow.tablet;
@@ -1322,6 +1418,19 @@
 
 			options.slidesToShow = options.slidesToShow.desktop;
 
+			if ( options.slidesToScroll.tablet ) {
+				tabletScroll = options.slidesToScroll.tablet;
+			} else {
+				tabletScroll = 1 === options.slidesToScroll.desktop ? 1 : 2;
+			}
+
+			if ( options.slidesToScroll.mobile ) {
+				mobileScroll = options.slidesToScroll.mobile;
+			} else {
+				mobileScroll = 1;
+			}
+
+			options.slidesToScroll = options.slidesToScroll.desktop;
 
 			defaultOptions = {
 				customPaging: function(slider, i) {
@@ -1333,13 +1442,14 @@
 						breakpoint: 1025,
 						settings: {
 							slidesToShow: tabletSlides,
+							slidesToScroll: tabletScroll
 						}
 					},
 					{
 						breakpoint: 768,
 						settings: {
 							slidesToShow: mobileSlides,
-							slidesToScroll: 1
+							slidesToScroll: mobileScroll
 						}
 					}
 				]
@@ -1693,12 +1803,16 @@
 			}
 
 			if ( $arrows[0] ) {
+				var slidesScroll      = slidesToScroll[ currentDeviceMode ],
+					xPos              = 0,
+					yPos              = 0,
+					diffpos;
+
 				$arrows.on( 'click.jetHorTimeline', function( event ){
 					var $this             = $( this ),
-						direction         = $this.hasClass( 'jet-next-arrow' ) ? 'next' : 'prev',
-						dirMultiplier     = !isRTL ? -1 : 1,
 						currentDeviceMode = elementorFrontend.getCurrentDeviceMode(),
-						slidesScroll      = slidesToScroll[ currentDeviceMode ];
+						direction         = $this.hasClass( 'jet-next-arrow' ) ? 'next' : 'prev',
+						dirMultiplier     = !isRTL ? -1 : 1;
 
 					if ( slidesScroll > columns[ currentDeviceMode ] ) {
 						slidesScroll = columns[ currentDeviceMode ];
@@ -1742,6 +1856,94 @@
 						'transform': 'translateX(' + dirMultiplier * currentTransform + '%)'
 					});
 
+				} );
+
+				$( $items ).on( 'touchstart', function( e ) {
+					var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+
+					xPos = touch.pageX;
+				} );
+
+				$( $items ).on( 'touchend', function( e ) {
+					var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+
+					yPos    = touch.pageX;
+					diffpos = yPos - xPos;
+
+					if ( diffpos < -50 ) {
+						var dirMultiplier     = !isRTL ? -1 : 1;
+
+						if ( slidesScroll > columns[ currentDeviceMode ] ) {
+							slidesScroll = columns[ currentDeviceMode ];
+						}
+
+						if ( currentPosition < maxPosition[ currentDeviceMode ] ) {
+							currentPosition += slidesScroll;
+
+							if ( currentPosition > maxPosition[ currentDeviceMode ] ) {
+								currentPosition = maxPosition[ currentDeviceMode ];
+							}
+						}
+
+						if ( currentPosition > 0 ) {
+							$prevArrow.removeClass( 'jet-arrow-disabled' );
+						} else {
+							$prevArrow.addClass( 'jet-arrow-disabled' );
+						}
+
+						if ( currentPosition === maxPosition[ currentDeviceMode ] ) {
+							$nextArrow.addClass( 'jet-arrow-disabled' );
+						} else {
+							$nextArrow.removeClass( 'jet-arrow-disabled' );
+						}
+
+						if ( currentPosition === 0 ) {
+							currentTransform = 0;
+						} else {
+							currentTransform = currentPosition * transform[ currentDeviceMode ];
+						}
+
+						$timelineTrack.css( {
+							'transform': 'translateX(' + dirMultiplier * currentTransform + '%)'
+						} );
+
+					} else if ( diffpos > 50 ) {
+						var dirMultiplier     = !isRTL ? -1 : 1;
+
+						if ( slidesScroll > columns[ currentDeviceMode ] ) {
+							slidesScroll = columns[ currentDeviceMode ];
+						}
+
+						if ( currentPosition > 0 ) {
+							currentPosition -= slidesScroll;
+
+							if ( currentPosition < 0 ) {
+								currentPosition = 0;
+							}
+						}
+
+						if ( currentPosition > 0 ) {
+							$prevArrow.removeClass( 'jet-arrow-disabled' );
+						} else {
+							$prevArrow.addClass( 'jet-arrow-disabled' );
+						}
+
+						if ( currentPosition === maxPosition[ currentDeviceMode ] ) {
+							$nextArrow.addClass( 'jet-arrow-disabled' );
+						} else {
+							$nextArrow.removeClass( 'jet-arrow-disabled' );
+						}
+
+						if ( currentPosition === 0 ) {
+							currentTransform = 0;
+						} else {
+							currentTransform = currentPosition * transform[ currentDeviceMode ];
+						}
+
+						$timelineTrack.css( {
+							'transform': 'translateX(' + dirMultiplier * currentTransform + '%)'
+						} );
+					}
 				} );
 			}
 
@@ -1848,7 +2050,10 @@
 
 			var $chart        = $scope.find( '.jet-bar-chart-container' ),
 				$chart_canvas = $chart.find( '.jet-bar-chart' ),
-				settings      = $chart.data( 'settings' );
+				settings      = $chart.data( 'settings' ),
+				tooltip_prefix    = $chart.data( 'tooltip-prefix' ) || '',
+				tooltip_suffix    = $chart.data( 'tooltip-suffix' ) || '',
+				tooltip_separator = $chart.data( 'tooltip-separator' ) || '';
 
 				if ( true === settings.options.tooltips.enabled ) {
 					settings.options.tooltips.callbacks = {
@@ -1860,6 +2065,15 @@
 
 			if ( ! $chart.length ) {
 				return;
+			}
+
+			if ( true === settings.options.tooltips.enabled ) {
+				settings.options.tooltips.callbacks = {
+					label: function( tooltipItem, data ) {
+						var value = '' != tooltip_separator ? JetElementsTools.addThousandCommaSeparator( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], tooltip_separator) : data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+						return ' ' + data.labels[tooltipItem.index] + ': ' + tooltip_prefix + value + tooltip_suffix;
+					}
+				};
 			}
 
 			elementorFrontend.waypoint( $chart_canvas, function() {
@@ -1879,7 +2093,10 @@
 				previous_label      = $line_chart.data( 'previous-label' ),
 				current_label       = $line_chart.data( 'current-label' ),
 				settings            = $line_chart.data( 'settings' ),
-				compare_labels_type = $line_chart.data( 'compare-labels-type' );
+				compare_labels_type = $line_chart.data( 'compare-labels-type' ),
+				tooltip_prefix      = $line_chart.data( 'tooltip-prefix' ) || '',
+				tooltip_suffix      = $line_chart.data( 'tooltip-suffix' ) || '',
+				tooltip_separator   = $line_chart.data( 'tooltip-separator' ) || '';
 
 			if ( ! $line_chart.length ) {
 				return;
@@ -1893,7 +2110,8 @@
 
 					myLineChart.options.tooltips = {
 						enabled:   false,
-						mode:      'point',
+						mode:      'x-axis',
+						intersect: false,
 						callbacks: {
 							label: function( tooltipItem, data ) {
 								var colorBox = data.datasets[tooltipItem.datasetIndex].borderColor;
@@ -1902,23 +2120,23 @@
 								if ( true === $compare ) {
 									var currentLabel    = 'custom' === compare_labels_type ? current_label : data.labels[tooltipItem.index],
 										title           = data.datasets[tooltipItem.datasetIndex].label,
-										currentVal      = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index],
-										current         = '<div class="jet-line-chart-tooltip-compare-current">' + currentLabel + ' : ' + currentVal + '</div>',
+										currentVal      = '' != tooltip_separator ? JetElementsTools.addThousandCommaSeparator( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], tooltip_separator ) : data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index],
+										current         = '<div class="jet-line-chart-tooltip-compare-current">' + currentLabel + ' : ' + tooltip_prefix + currentVal + tooltip_suffix + '</div>',
 										previous        = '',
 										compareColorBox = data.datasets[tooltipItem.datasetIndex].borderColor,
 										compareColorBox = compareColorBox.replace( /"/g, '"' );
 
 									if ( typeof (data.labels[tooltipItem.index - 1]) != "undefined" && data.labels[tooltipItem.index - 1] !== null ) {
 										var previousLabel = 'custom' === compare_labels_type ? previous_label : data.labels[tooltipItem.index - 1],
-											previousVal   = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index - 1],
-											previous      = '<div class="jet-line-chart-tooltip-compare-previous">' + previousLabel + ' : ' + previousVal + '</div>';
+											previousVal   = '' != tooltip_separator ? JetElementsTools.addThousandCommaSeparator( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index - 1], tooltip_separator ) : data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index - 1],
+											previous      = '<div class="jet-line-chart-tooltip-compare-previous">' + previousLabel + ' : ' + tooltip_prefix + previousVal + tooltip_suffix + '</div>';
 									}
 
 									return '<div class="jet-line-chart-tooltip-title"><span class="jet-line-chart-tooltip-color-box" style="background:' + compareColorBox + '"></span>' + title + '</div><div class="jet-line-chart-tooltip-body">' + current + previous + '</div>';
 								} else {
 									var label = data.datasets[tooltipItem.datasetIndex].label,
-										val   = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-									return '<div class="jet-line-chart-tooltip-body"><span class="jet-line-chart-tooltip-color-box" style="background:' + colorBox + '"></span>' + label + ' : ' + val + '</div>';
+										val   = '' != tooltip_separator ? JetElementsTools.addThousandCommaSeparator( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], tooltip_separator ) : data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+									return '<div class="jet-line-chart-tooltip-body"><span class="jet-line-chart-tooltip-color-box" style="background:' + colorBox + '"></span>' + label + ' : ' + tooltip_prefix + val + tooltip_suffix + '</div>';
 								}
 							},
 						},
@@ -2203,9 +2421,8 @@
 
 		widgetPricingTable: function( $scope ) {
 			var $target         = $scope.find( '.pricing-table' ),
-				$tooltips       = $( '.pricing-feature .pricing-feature__inner[title]', $target ),
+				$tooltips       = $( '.pricing-feature .pricing-feature__inner[data-tippy-content]', $target ),
 				settings        = $target.data( 'tooltips-settings' ),
-
 				$fold_target    = $scope.find( '.pricing-table__fold-mask' ),
 				$fold_button    = $scope.find( '.pricing-table__fold-button' ),
 				$fold_mask      = $fold_target,
@@ -2229,16 +2446,18 @@
 					}
 
 					tippy( [ itemSelector ], {
-						arrow: settings['tooltipArrow'],
-						arrowType: settings['tooltipArrowType'],
-						arrowTransform: settings['tooltipArrowSize'],
+						arrow: settings['tooltipArrow'] ? true : false,
 						duration: [ settings['tooltipShowDuration']['size'], settings['tooltipHideDuration']['size'] ],
-						distance: settings['tooltipDistance']['size'],
+						delay: settings['tooltipDelay']['size'],
 						placement: settings['tooltipPlacement'],
 						trigger: settings['tooltipTrigger'],
 						animation: settings['tooltipAnimation'],
-						flipBehavior: 'clockwise',
 						appendTo: itemSelector,
+						offset: [ 0, settings['tooltipDistance']['size'] ],
+						allowHTML: true,
+						popperOptions: {
+							strategy: 'fixed',
+						},
 					} );
 
 				} );
@@ -2422,6 +2641,20 @@
 			(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
 
 			return check;
+		},
+
+		addThousandCommaSeparator: function ( nStr, separator ) {
+			var nStr = nStr + '',
+				x    = nStr.split('.'),
+				x1   = x[0],
+				x2   = x.length > 1 ? '.' + x[1] : '',
+				rgx  = /(\d+)(\d{3})/;
+
+			while ( rgx.test(x1) ) {
+				x1 = x1.replace(rgx, '$1' + separator + '$2');
+			}
+
+			return x1 + x2;
 		}
 	}
 

@@ -169,9 +169,12 @@ class Jet_Elements_Advanced_Carousel extends Jet_Elements_Base {
 			'template_id',
 			array(
 				'label'       => esc_html__( 'Choose Template', 'jet-elements' ),
-				'label_block' => 'true',
 				'type'        => 'jet-query',
 				'query_type'  => 'elementor_templates',
+				'edit_button' => array(
+					'active' => true,
+					'label'  => __( 'Edit Template', 'jet-elements' ),
+				),
 				'condition'   => array(
 					'item_content_type' => 'template',
 				),
@@ -324,7 +327,7 @@ class Jet_Elements_Advanced_Carousel extends Jet_Elements_Base {
 			)
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'slides_to_scroll',
 			array(
 				'label'     => esc_html__( 'Slides to Scroll', 'jet-elements' ),
@@ -389,6 +392,18 @@ class Jet_Elements_Advanced_Carousel extends Jet_Elements_Base {
 			'dots',
 			array(
 				'label'        => esc_html__( 'Show Dots Navigation', 'jet-elements' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => esc_html__( 'Yes', 'jet-elements' ),
+				'label_off'    => esc_html__( 'No', 'jet-elements' ),
+				'return_value' => 'true',
+				'default'      => '',
+			)
+		);
+
+		$this->add_control(
+			'fraction_navigation',
+			array(
+				'label'        => esc_html__( 'Show Fraction Navigation', 'jet-elements' ),
 				'type'         => Controls_Manager::SWITCHER,
 				'label_on'     => esc_html__( 'Yes', 'jet-elements' ),
 				'label_off'    => esc_html__( 'No', 'jet-elements' ),
@@ -1823,6 +1838,250 @@ class Jet_Elements_Advanced_Carousel extends Jet_Elements_Base {
 
 		$this->_end_controls_section();
 
+		$this->_start_controls_section(
+			'section_fraction_style',
+			array(
+				'label'      => esc_html__( 'Carousel Fraction Pagination', 'jet-elements' ),
+				'tab'        => Controls_Manager::TAB_STYLE,
+				'show_label' => false,
+				'condition'  => array(
+					'fraction_navigation' => 'true'
+				)
+			)
+		);
+
+		$this->_start_controls_tabs( 'tabs_fraction_style' );
+
+		$this->_start_controls_tab(
+			'tab_fraction_current',
+			array(
+				'label' => esc_html__( 'Current Value', 'jet-elements' ),
+			)
+		);
+
+		$this->_add_control(
+			'fraction_current_text_color',
+			array(
+				'label'     => esc_html__( 'Text Color', 'jet-elements' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '',
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .current' => 'color: {{VALUE}};',
+				),
+			),
+			25
+		);
+
+		$this->_add_control(
+			'fraction_current_background_color',
+			array(
+				'label'     => esc_html__( 'Background Color', 'jet-elements' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '',
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .current' => 'background-color: {{VALUE}};',
+				),
+			),
+			25
+		);
+
+		$this->_add_responsive_control(
+			'fraction_current_padding',
+			array(
+				'label'       => esc_html__( 'Padding', 'jet-elements' ),
+				'type'        => Controls_Manager::DIMENSIONS,
+				'size_units'  => array( 'px', '%' ),
+				'selectors'   => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .current' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			),
+			50
+		);
+
+		$this->_end_controls_tab();
+
+		$this->_start_controls_tab(
+			'fraction_total',
+			array(
+				'label' => esc_html__( 'Total Value', 'jet-elements' ),
+			)
+		);
+
+		$this->_add_control(
+			'fraction_total_text_color',
+			array(
+				'label'     => esc_html__( 'Text Color', 'jet-elements' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '',
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .total' => 'color: {{VALUE}};',
+				),
+			),
+			25
+		);
+
+		$this->_add_control(
+			'fraction_total_background_color',
+			array(
+				'label'     => esc_html__( 'Background Color', 'jet-elements' ),
+				'type'      => Controls_Manager::COLOR,
+				'default'   => '',
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .total' => 'background-color: {{VALUE}};',
+				),
+			),
+			25
+		);
+
+		$this->_add_control(
+			'fraction_total_border_color',
+			array(
+				'label' => esc_html__( 'Border Color', 'jet-elements' ),
+				'type' => Controls_Manager::COLOR,
+				'condition' => array(
+					'fraction_border_border!' => '',
+				),
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel .jet-carousel__fraction-navigation .total' => 'border-color: {{VALUE}};',
+				),
+			),
+			50
+		);
+
+		$this->_add_responsive_control(
+			'fraction_total_padding',
+			array(
+				'label'       => esc_html__( 'Padding', 'jet-elements' ),
+				'type'        => Controls_Manager::DIMENSIONS,
+				'size_units'  => array( 'px', '%' ),
+				'selectors'   => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .total' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			),
+			50
+		);
+
+		$this->_end_controls_tab();
+
+		$this->_start_controls_tab(
+			'fraction_separator',
+			array(
+				'label' => esc_html__( 'Separator', 'jet-elements' ),
+			)
+		);
+
+		$this->_add_control(
+			'fraction_separator_color',
+			array(
+				'label' => esc_html__( 'Color', 'jet-elements' ),
+				'type' => Controls_Manager::COLOR,
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .separator' => 'color: {{VALUE}}',
+				),
+			),
+			25
+		);
+
+		$this->_end_controls_tab();
+
+		$this->_end_controls_tabs();
+
+		$this->_add_responsive_control(
+			'fraction_alignment',
+			array(
+				'label'   => esc_html__( 'Alignment', 'jet-elements' ),
+				'type'    => Controls_Manager::CHOOSE,
+				'default' => 'center',
+				'options' => array(
+					'flex-start' => array(
+						'title' => esc_html__( 'Start', 'jet-elements' ),
+						'icon'  => ! is_rtl() ? 'eicon-h-align-left' : 'eicon-h-align-right',
+					),
+					'center' => array(
+						'title' => esc_html__( 'Center', 'jet-elements' ),
+						'icon'  => 'eicon-h-align-center',
+					),
+					'flex-end' => array(
+						'title' => esc_html__( 'End', 'jet-elements' ),
+						'icon'  => ! is_rtl() ? 'eicon-h-align-right' : 'eicon-h-align-left',
+					),
+				),
+				'separator' => 'before',
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation' => 'justify-content: {{VALUE}};',
+				),
+			),
+			25
+		);
+
+		$this->_add_group_control(
+			Group_Control_Typography::get_type(),
+			array(
+				'name'     => 'fraction_typography',
+				'scheme'   => Scheme_Typography::TYPOGRAPHY_3,
+				'selector' => '{{WRAPPER}} .jet-carousel__fraction-navigation span',
+			),
+			50
+		);
+
+		$this->_add_responsive_control(
+			'fraction_gap',
+			array(
+				'label'   => esc_html__( 'Gap', 'jet-elements' ),
+				'type'    => Controls_Manager::SLIDER,
+				'default' => array(
+					'size' => 5,
+					'unit' => 'px',
+				),
+				'range' => array(
+					'px' => array(
+						'min' => 0,
+						'max' => 50,
+					),
+				),
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .separator' => 'margin-right: {{SIZE}}{{UNIT}}; margin-left: {{SIZE}}{{UNIT}};',
+				),
+			),
+			25
+		);
+
+		$this->_add_responsive_control(
+			'fraction_margin',
+			array(
+				'label'      => esc_html__( 'Pagination Margin', 'jet-elements' ),
+				'type'       => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%' ),
+				'selectors'  => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			),
+			50
+		);
+
+		$this->_add_group_control(
+			Group_Control_Border::get_type(),
+			array(
+				'name' => 'fraction_border',
+				'selector' => '{{WRAPPER}} .jet-carousel__fraction-navigation span:not(.separator)',
+			)
+		);
+
+		$this->_add_control(
+			'fraction_border_radius',
+			array(
+				'label' => esc_html__( 'Border Radius', 'jet-elements' ),
+				'type' => Controls_Manager::DIMENSIONS,
+				'size_units' => array( 'px', '%', 'em' ),
+				'selectors' => array(
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .current' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+					'{{WRAPPER}} .jet-carousel__fraction-navigation .total' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+				),
+			)
+		);
+
+		$this->_end_controls_section();
+
 	}
 
 	protected function render() {
@@ -1853,11 +2112,16 @@ class Jet_Elements_Advanced_Carousel extends Jet_Elements_Base {
 			'speed'          => absint( $settings['speed'] ),
 			'arrows'         => filter_var( $settings['arrows'], FILTER_VALIDATE_BOOLEAN ),
 			'dots'           => filter_var( $settings['dots'], FILTER_VALIDATE_BOOLEAN ),
-			'slidesToScroll' => absint( $settings['slides_to_scroll'] ),
+			'slidesToScroll' => array(
+				'desktop' => absint( $settings['slides_to_scroll'] ),
+				'tablet'  => absint( $settings['slides_to_scroll_tablet'] ),
+				'mobile'  => absint( $settings['slides_to_scroll_mobile'] ),
+			),
 			'variableWidth'  => filter_var( $settings['fluid_width'], FILTER_VALIDATE_BOOLEAN ),
 			'prevArrow'      => '.jet-carousel__prev-arrow-' . $widget_id,
 			'nextArrow'      => '.jet-carousel__next-arrow-' . $widget_id,
 			'rtl'            => is_rtl(),
+			'fractionNav'    => filter_var( $settings['fraction_navigation'], FILTER_VALIDATE_BOOLEAN ),
 		);
 
 		if ( 1 === absint( $settings['slides_to_show'] ) ) {

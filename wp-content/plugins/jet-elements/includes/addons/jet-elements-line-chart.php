@@ -399,8 +399,45 @@ class Jet_Elements_Line_Chart extends Jet_Elements_Base {
 			)
 		);
 
+		$this->add_control(
+			'chart_tooltips_heading',
+			array(
+				'label'     => esc_html__( 'Tooltips', 'jet-elements' ),
+				'type'      => Controls_Manager::HEADING,
+				'separator' => 'before',
+			)
+		);
+
+		$this->add_control(
+			'chart_tooltip_prefix',
+			array(
+				'label'   => esc_html__( 'Prefix', 'jet-elements' ),
+				'type'    => Controls_Manager::TEXT,
+				'dynamic' => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'chart_tooltip_suffix',
+			array(
+				'label'   => esc_html__( 'Suffix', 'jet-elements' ),
+				'type'    => Controls_Manager::TEXT,
+				'dynamic' => array( 'active' => true ),
+			)
+		);
+
+		$this->add_control(
+			'chart_tooltip_separator',
+			array(
+				'label'   => esc_html__( 'Thousand Separator', 'jet-elements' ),
+				'type'    => Controls_Manager::TEXT,
+				'default' => '',
+				'dynamic' => array( 'active' => true ),
+			)
+		);
+
 		$this->end_controls_section();
-		
+
 		/**
 		 * `Chart` Style Tab Section
 		 */
@@ -932,6 +969,10 @@ class Jet_Elements_Line_Chart extends Jet_Elements_Base {
 		$comparison_prev_label         = $settings[ 'chart_comparison_tooltip_previous_label' ];
 		$comparison_current_label      = $settings[ 'chart_comparison_tooltip_current_label' ];
 		$comparison_tooltip_label_type = $settings[ 'chart_comparison_tooltip_label_type' ];
+		$tooltip_prefix                = isset( $settings['chart_tooltip_prefix'] ) ? $settings['chart_tooltip_prefix'] : '';
+		$tooltip_suffix                = isset( $settings['chart_tooltip_suffix'] ) ? $settings['chart_tooltip_suffix'] : '';
+		$tooltip_separator             = isset( $settings['chart_tooltip_separator'] ) ? $settings['chart_tooltip_separator'] : '';
+		
 
 		$this->add_render_attribute( [
 				'container' => array(
@@ -945,10 +986,13 @@ class Jet_Elements_Line_Chart extends Jet_Elements_Base {
 							),
 							'options' => $data_options,
 						) ) ),
-					'data-compare' => $comparison_enabled,
-					'data-previous-label' => $comparison_prev_label,
-					'data-current-label' => $comparison_current_label,
+					'data-compare'             => $comparison_enabled,
+					'data-previous-label'      => $comparison_prev_label,
+					'data-current-label'       => $comparison_current_label,
 					'data-compare-labels-type' => $comparison_tooltip_label_type,
+					'data-tooltip-prefix'      => $tooltip_prefix,
+					'data-tooltip-suffix'      => $tooltip_suffix,
+					'data-tooltip-separator'   => $tooltip_separator,
 				),
 				'canvas' => array(
 					'class' => 'jet-line-chart',

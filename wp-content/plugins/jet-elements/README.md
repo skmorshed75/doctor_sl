@@ -4,6 +4,20 @@ Brand new addon for Elementor Page builder. It provides the set of modules to cr
 
 # ChangeLog
 
+## [2.5.8](https://github.com/ZemezLab/jet-elements/archive/2.5.8.zip) - 23.06.2021
+* Added: [Crocoblock/suggestions#1748](https://github.com/Crocoblock/suggestions/issues/1748)
+* Added: [Crocoblock/suggestions#2518](https://github.com/Crocoblock/suggestions/issues/2518)
+* Added: [Crocoblock/suggestions#2523](https://github.com/Crocoblock/suggestions/issues/2523)
+* Added: [Crocoblock/suggestions#2520](https://github.com/Crocoblock/suggestions/issues/2520)
+* Added: [Crocoblock/suggestions#2672](https://github.com/Crocoblock/suggestions/issues/2672)
+* Added: [Crocoblock/suggestions#2532](https://github.com/Crocoblock/suggestions/issues/2532)
+* Added: [Crocoblock/suggestions#3076](https://github.com/Crocoblock/suggestions/issues/3076)
+* Added: [Crocoblock/suggestions#3133](https://github.com/Crocoblock/suggestions/issues/3133)
+* Fixed: use global colors in the Circle Progress widget
+* Fixed: tooltips in the Pricing Table widget
+* Fixed: actions after expire in the Countdown widget
+* Fixed: image border in the Team Member widget
+
 ## [2.5.7](https://github.com/ZemezLab/jet-elements/archive/2.5.7.zip) - 28.04.2021
 * Updated: JetDashboard Module to v2.0.8
 * Fixed: compatibility with Elementor 3.2

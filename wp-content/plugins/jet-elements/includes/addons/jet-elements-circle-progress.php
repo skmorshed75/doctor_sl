@@ -324,6 +324,9 @@ class Jet_Elements_Circle_Progress extends Jet_Elements_Base {
 				'label'     => esc_html__( 'Background Stroke Color', 'jet-elements' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#e6e9ec',
+				'selectors' => array(
+					'{{WRAPPER}} .circle-progress__meter'  => 'stroke: {{VALUE}};',
+				),
 				'condition' => array(
 					'bg_stroke_type' => array( 'color' ),
 				),
@@ -336,6 +339,9 @@ class Jet_Elements_Circle_Progress extends Jet_Elements_Base {
 				'label'     => esc_html__( 'Background Stroke Color A', 'jet-elements' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#54595f',
+				'selectors' => array(
+					'{{WRAPPER}} .circle-progress-meter-gradient-a' => 'stop-color: {{VALUE}}',
+				),
 				'condition' => array(
 					'bg_stroke_type' => array( 'gradient' ),
 				),
@@ -348,6 +354,9 @@ class Jet_Elements_Circle_Progress extends Jet_Elements_Base {
 				'label'     => esc_html__( 'Background Stroke Color B', 'jet-elements' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#858d97',
+				'selectors' => array(
+					'{{WRAPPER}} .circle-progress-meter-gradient-b' => 'stop-color: {{VALUE}}',
+				),
 				'condition' => array(
 					'bg_stroke_type' => array( 'gradient' ),
 				),
@@ -396,6 +405,9 @@ class Jet_Elements_Circle_Progress extends Jet_Elements_Base {
 				'label'     => esc_html__( 'Value Stroke Color', 'jet-elements' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#6ec1e4',
+				'selectors' => array(
+					'{{WRAPPER}} .circle-progress__value'  => 'stroke: {{VALUE}};',
+				),
 				'condition' => array(
 					'val_stroke_type' => array( 'color' ),
 				),
@@ -408,6 +420,9 @@ class Jet_Elements_Circle_Progress extends Jet_Elements_Base {
 				'label'     => esc_html__( 'Value Stroke Color A', 'jet-elements' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#6ec1e4',
+				'selectors' => array(
+					'{{WRAPPER}} .circle-progress-value-gradient-a'  => 'stop-color: {{VALUE}};',
+				),
 				'condition' => array(
 					'val_stroke_type' => array( 'gradient' ),
 				),
@@ -420,6 +435,9 @@ class Jet_Elements_Circle_Progress extends Jet_Elements_Base {
 				'label'     => esc_html__( 'Value Stroke Color B', 'jet-elements' ),
 				'type'      => Controls_Manager::COLOR,
 				'default'   => '#b6e0f1',
+				'selectors' => array(
+					'{{WRAPPER}} .circle-progress-value-gradient-b'  => 'stop-color: {{VALUE}};',
+				),
 				'condition' => array(
 					'val_stroke_type' => array( 'gradient' ),
 				),

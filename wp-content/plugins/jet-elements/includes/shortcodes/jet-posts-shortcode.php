@@ -406,6 +406,17 @@ class Jet_Posts_Shortcode extends Jet_Elements_Shortcode_Base {
 					'show_meta' => array( 'yes' ),
 				),
 			),
+			'show_mod_date' => array(
+				'type'         => 'switcher',
+				'label'        => esc_html__( 'Show Posts Modified Date', 'jet-elements' ),
+				'label_on'     => esc_html__( 'Yes', 'jet-elements' ),
+				'label_off'    => esc_html__( 'No', 'jet-elements' ),
+				'return_value' => 'yes',
+				'default'      => '',
+				'condition' => array(
+					'show_meta' => array( 'yes' ),
+				),
+			),
 			'show_comments' => array(
 				'type'         => 'switcher',
 				'label'        => esc_html__( 'Show Posts Comments', 'jet-elements' ),
@@ -434,10 +445,11 @@ class Jet_Posts_Shortcode extends Jet_Elements_Shortcode_Base {
 				),
 			),
 			'more_icon' => array(
-				'type'      => 'icon',
-				'label'     => esc_html__( 'Read More Button Icon', 'jet-elements' ),
-				'skin'      => 'inline',
-				'condition' => array(
+				'type'        => 'icon',
+				'label'       => esc_html__( 'Read More Button Icon', 'jet-elements' ),
+				'label_block' => false,
+				'skin'        => 'inline',
+				'condition'   => array(
 					'show_more' => array( 'yes' ),
 				),
 			),

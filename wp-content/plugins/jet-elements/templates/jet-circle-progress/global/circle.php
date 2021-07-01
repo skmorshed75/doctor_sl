@@ -99,12 +99,12 @@ $val_stroke_gradient_angle = ! empty( $settings['val_stroke_gradient_angle'] ) ?
 ?>
 <svg class="circle-progress" width="<?php echo $size; ?>" height="<?php echo $size; ?>" viewBox="<?php echo $viewbox; ?>" data-radius="<?php echo $radius; ?>" data-circumference="<?php echo $circumference; ?>" data-responsive-sizes="<?php echo esc_attr( json_encode( $responsive_sizes ) ); ?>">
 	<linearGradient id="circle-progress-meter-gradient-<?php echo $this->get_id(); ?>" gradientUnits="objectBoundingBox" gradientTransform="rotate(<?php echo $val_bg_gradient_angle; ?> 0.5 0.5)" x1="-0.25" y1="0.5" x2="1.25" y2="0.5">
-		<stop offset="0%" stop-color="<?php echo $settings['val_bg_gradient_color_a']; ?>"/>
-		<stop offset="100%" stop-color="<?php echo $settings['val_bg_gradient_color_b']; ?>"/>
+		<stop class="circle-progress-meter-gradient-a" offset="0%" stop-color="<?php echo $settings['val_bg_gradient_color_a']; ?>"/>
+		<stop class="circle-progress-meter-gradient-b" offset="100%" stop-color="<?php echo $settings['val_bg_gradient_color_b']; ?>"/>
 	</linearGradient>
 	<linearGradient id="circle-progress-value-gradient-<?php echo $this->get_id(); ?>" gradientUnits="objectBoundingBox" gradientTransform="rotate(<?php echo $val_stroke_gradient_angle; ?> 0.5 0.5)" x1="-0.25" y1="0.5" x2="1.25" y2="0.5">
-		<stop offset="0%" stop-color="<?php echo $settings['val_stroke_gradient_color_a']; ?>"/>
-		<stop offset="100%" stop-color="<?php echo $settings['val_stroke_gradient_color_b']; ?>"/>
+		<stop class="circle-progress-value-gradient-a" offset="0%" stop-color="<?php echo $settings['val_stroke_gradient_color_a']; ?>"/>
+		<stop class="circle-progress-value-gradient-b" offset="100%" stop-color="<?php echo $settings['val_stroke_gradient_color_b']; ?>"/>
 	</linearGradient>
 	<circle
 		class="circle-progress__meter"

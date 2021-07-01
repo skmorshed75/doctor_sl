@@ -334,6 +334,33 @@ class Jet_Elements_Horizontal_Timeline extends Jet_Elements_Base {
 		);
 
 		$this->add_control(
+			'mobile_vertical_layout',
+			array(
+				'label'   => esc_html__( 'Mobile Devices Layout', 'jet-elements' ),
+				'type'    => Controls_Manager::CHOOSE,
+				'toggle'  => false,
+				'default' => 'chess',
+				'options' => array(
+					'top' => array(
+						'title' => esc_html__( 'Top', 'jet-elements' ),
+						'icon'  => 'eicon-v-align-top',
+					),
+					'chess' => array(
+						'title' => esc_html__( 'Chess', 'jet-elements' ),
+						'icon'  => 'eicon-v-align-middle',
+					),
+					'bottom' => array(
+						'title' => esc_html__( 'Bottom', 'jet-elements' ),
+						'icon'  => 'eicon-v-align-bottom',
+					),
+				),
+				'condition' => array(
+					'vertical_layout' => 'chess'
+				)
+			)
+		);
+
+		$this->add_control(
 			'horizontal_alignment',
 			array(
 				'label'   => esc_html__( 'Alignment', 'jet-elements' ),

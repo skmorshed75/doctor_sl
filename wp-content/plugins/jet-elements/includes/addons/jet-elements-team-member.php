@@ -541,7 +541,6 @@ class Jet_Elements_Team_Member extends Jet_Elements_Base {
 				),
 				'selectors'  => array(
 					'{{WRAPPER}} ' . $css_scheme['image'] => 'width: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} ' . $css_scheme['figure'] => 'width: {{SIZE}}{{UNIT}};',
 				),
 				'condition' => array(
 					'custom_image_size' => 'yes',
@@ -570,7 +569,6 @@ class Jet_Elements_Team_Member extends Jet_Elements_Base {
 				),
 				'selectors'  => array(
 					'{{WRAPPER}} ' . $css_scheme['image'] => 'height: {{SIZE}}{{UNIT}};',
-					'{{WRAPPER}} ' . $css_scheme['figure'] => 'height: {{SIZE}}{{UNIT}};',
 				),
 				'condition' => array(
 					'custom_image_size' => 'yes',

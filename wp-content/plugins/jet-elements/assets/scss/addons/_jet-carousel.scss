@@ -121,6 +121,14 @@
 			}
 		}
 	}
+
+	&__fraction-navigation {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		padding: 0 10px;
+	}
 }
 
 .elementor-jet-carousel .jet-carousel .elementor-slick-slider,
