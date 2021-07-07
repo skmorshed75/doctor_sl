@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2 - 05.07.2021
+- FIX: minor bugs
+
 ## 1.2.1 - 27.10.2020
 - FIX: minor bugs
 
